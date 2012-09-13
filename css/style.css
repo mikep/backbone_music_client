@@ -74,15 +74,14 @@ td { vertical-align: top; }
    Author:
    ========================================================================== */
 
-
-
-
-
-
-
-
-
-
+.directory {
+    background-color:#333;
+    color:#ededed;
+}
+.file{
+    background-color:#ededed;
+    color:#333;
+}
 
 /* =============================================================================
    Media Queries
@@ -109,7 +108,7 @@ td { vertical-align: top; }
 /* =============================================================================
    Print Styles
    ========================================================================== */
- 
+
 @media print {
   * { background: transparent !important; color: black !important; box-shadow:none !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } /* Black prints faster: h5bp.com/s */
   a, a:visited { text-decoration: underline; }
