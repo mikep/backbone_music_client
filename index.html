@@ -16,12 +16,16 @@
     <link href="css/style.css" rel="stylesheet">
     <style>
         div.container-fluid {
+            height:100%;
+            overflow:hidden;
         }
         div.navbar {
         }
         div.row-fluid {
         }
-        div[role="main"] {
+        div[role=main] {
+            height: 95%;
+            overflow: scroll;
         }
         div#playlist {
         }
@@ -55,13 +59,15 @@
                 </div>
                 <div id="playlist" class="ui-sortable ui-droppable"></div>
                 <div id="player_controls">
-                    <ul id="controls">
-                        <li id="previous" class="button"></li>
-                        <li id="pause" class="button"></li>
-                        <li id="next" class="button"></li>
-                        <li id="stop" class="button"></li>
-                        <li id="mute" class="button"></li>
-                    </ul>
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-fast-backward"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-backward"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-stop"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-play"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-pause"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-forward"></i></a>
+                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-fast-forward"></i></a>
+                    </div>
                     <audio id="player" controls onended="playlist_next()" src=""></audio>
                 </div>
             </div>
