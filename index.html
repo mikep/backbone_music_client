@@ -84,6 +84,10 @@
         <div bind="id" style="margin-left:10px;" class="list"></div>
     </script>
 
+    <script type="text/template" id="playlist_item_row_template">
+        <div class="song" bind="id"><span bind="name"></span></div>
+    </script>
+
     <script type="text/template" id="list_template">
         <div id="list"></div>
     </script>
@@ -107,6 +111,39 @@
                 url: 'api/list_dir/',
                 comparator: function(model) {
                     return model.get('name');
+                }
+            });
+
+            music.prototypes.PlaylistItemView = Backbone.View.extend({
+                template: _.template($(playlist_item_row_template).html()),
+                events: {
+                    'click': 'removeFromPlaylist'
+                },
+                initialize: function() {
+                    this.render();
+                    music.collections.currentPlaylist.add(this.model);
+                    console.log(this);
+                    this.modelBinder = new Backbone.ModelBinder();
+                    var bindings = Backbone.ModelBinder.createDefaultBindings(this.$el, 'bind');
+                    bindings = _.extend(bindings, {
+                      id: [
+                        {
+                            selector: '[bind=id]',
+                            elAttribute: 'id',
+                        },
+                        {
+                            selector: '[bind=name]',
+                            elAttribute: 'text'
+                        },
+                      ],
+                    });
+                    this.modelBinder.bind(this.model, this.$el, bindings);
+                },
+                render: function() {
+                    this.$el.html(this.template(this.model.toJSON()));
+                },
+                removeFromPlaylist: function() {
+                    console.log('removing: ', this.model);
                 }
             });
 
@@ -177,6 +214,11 @@
                         }
                     } else {
                         console.log("playing song", this.model.get('path'));
+                        var x = new music.prototypes.PlaylistItemView({
+                            model: this.model,
+                            parent: this,
+                            el: $('#playlist')
+                        });
                     }
 
                     return false;
@@ -208,6 +250,7 @@
 
             $.getJSON('api/list_dir/', function(data) {
                 music.collections.files = new music.prototypes.Files();
+                music.collections.currentPlaylist = new music.prototypes.Files();
 
                 music.views['listView'] = new music.prototypes.ListView({
                     el: $('div[role="main"]'),

@@ -279,10 +279,44 @@ p#title {
 
 #player_controls {
   text-align:center;
+  position:absolute;
+  bottom:0px;
 }
 
-div.list a.list_row_item {
+div#file_browser a.list_row_item {
+  margin-top:3px;
+}
+
+div#file_browser div.list a.list_row_item {
   margin-top:0px;
+}
+
+
+#playlist {
+    position:relative;
+    width:100%;
+    overflow:none;
+    min-height:50px;
+}
+
+#playlist .song {
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0976562) 0px 1px 1px 0px;
+    -webkit-font-smoothing: antialiased;
+    background-color: #313131;
+    background-image: -webkit-linear-gradient(top, rgb(59, 59, 59), rgb(49, 49, 49));
+    border-top-color: #4D4D4D;
+    border-top-style: solid;
+    border-top-width: 1px;
+    box-shadow: rgba(0, 0, 0, 0.0976562) 0px 1px 1px 0px;
+    color: #C4C4C4;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 18px;
+    padding-bottom: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 3px;
+    text-shadow: rgba(0, 0, 0, 0.796875) 0px 1px 1px;
 }
 /* =============================================================================
    Media Queries
