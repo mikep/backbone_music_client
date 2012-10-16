@@ -142,7 +142,6 @@
                             selector: '[bind=id]',
                             elAttribute: 'id',
                             converter: function(direction, id) {
-                                console.log(id);
                                 return id.replace(/=/g, '');
                             }
                         }
@@ -153,9 +152,10 @@
                 render: function() {
                     this.$el.html(this.template(this.model.toJSON()));
                 },
-                click: function() {
+                click: function(e) {
                     console.log('you clicked ' + this.model.get('name'));
                     var self = this;
+                    console.log(self.model.attributes);
                     if (this.model.get('type') === "directory") {
                         var el = this.model.id.replace(/=/g, '');
                         console.log(el ,$('#' + el));
@@ -178,6 +178,8 @@
                     } else {
                         console.log("playing song", this.model.get('path'));
                     }
+
+                    return false;
                 }
             });
 
