@@ -142,7 +142,8 @@
                             selector: '[bind=id]',
                             elAttribute: 'id',
                             converter: function(direction, id) {
-                                return id.replace('=', '');
+                                console.log(id);
+                                return id.replace(/=/g, '');
                             }
                         }
                       ]
@@ -156,7 +157,8 @@
                     console.log('you clicked ' + this.model.get('name'));
                     var self = this;
                     if (this.model.get('type') === "directory") {
-                        var el = self.model.id.replace('=', '');
+                        var el = this.model.id.replace(/=/g, '');
+                        console.log(el ,$('#' + el));
                         if (this.model.get("open")) {
                             $('#' + el).html('').hide();
                             this.model.unset('open');
