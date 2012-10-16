@@ -12,46 +12,18 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/m-styles.min.css" rel="stylesheet">
     <style>
-        div.container-fluid {
-            height:100%;
-            overflow:hidden;
-        }
-        div.navbar {
-        }
-        div.row-fluid {
-        }
-        div[role=main] {
-            height: 95%;
-            overflow: scroll;
-        }
-        div#playlist {
-        }
+
     </style>
 </head>
 
 <body>
-
-    <div class="container-fluid">
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <ul class="nav">
-                    <li class="active">
-                        <a href="#">Home</a>
-                    </li>
-                    <li><a href="#">Playlists</a></li>
-                    <li><a href="#">Preferences</a></li>
-                </ul>
-                <form class="navbar-search pull-right">
-                    <input type="text" class="search-query" placeholder="Search">
-                </form>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span3">
-                <img src="/static/album.jpg" id="album_art" />
+    <div id="container">
+        <div id="left">
+            <div id="player_container">
+                <img src="img/album.jpg" id="album_art" />
                 <div id="now_playing_container">
                     <p id="title"></p>
                     <p id="artist"></p>
@@ -59,20 +31,38 @@
                 </div>
                 <div id="playlist" class="ui-sortable ui-droppable"></div>
                 <div id="player_controls">
-                    <div class="btn-group">
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-fast-backward"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-backward"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-stop"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-play"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-pause"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-forward"></i></a>
-                        <a href="#" class="btn btn-inverse"><i class="icon-white icon-fast-forward"></i></a>
+                    <div class="m-btn-group">
+                        <a href="#" class="m-btn icn-only"><i class="icon-backward"></i></a>
+                        <a href="#" class="m-btn icn-only"><i class="icon-play"></i></a>
+                        <a href="#" class="m-btn icn-only"><i class="icon-stop"></i></a>
+                        <a href="#" class="m-btn icn-only"><i class="icon-forward"></i></a>
+                        <a href="#" class="m-btn icn-only"><i class="icon-volume-off"></i></a>
+                        <a href="#" class="m-btn icn-only"><i class="icon-repeat"></i></a>
                     </div>
                     <audio id="player" controls onended="playlist_next()" src=""></audio>
                 </div>
             </div>
-            <div class="span9" role="main">
+        </div>
+        <div id="right">
+            <div id="menu_bar">
+                <div class="m-btn-group toggle-buttons panels">
+                    <a href="#" class="m-btn active">Library</a>
+                    <a href="#" class="m-btn">Playlists</a>
+                    <a href="#" class="m-btn">Search</a>
+                    <a href="#" class="m-btn">Preferences</a>
+                </div>
+
+                <div class="m-btn-group">
+                    <a href="#" class="m-btn"><i class="icon-random"></i> Random Album</a>
+                </div>
+
+                <!--<input type='text' id='search' />-->
             </div>
+            <div id="file_browser" class="main_window" role="main"></div>
+            <div id="playlist_browser" class="main_window" style="display:none;"></div>
+            <div id="search_browser" class="main_window" style="display:none;"></div>
+            <div id="settings_browser" class="main_window" style="display:none;"></div>
+            <div id="file_info"></div>
         </div>
     </div>
 
@@ -87,10 +77,11 @@
     <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
     <script type="text/template" id="list_row_template">
-        <div>
+        <a class="m-btn mini list_row_item" style="width:100%; text-align:left;">
+            <i bind="type"></i>
             <span bind="name"></span>
-            <span class="list"></span>
-        </div>
+        </a>
+        <div bind="id" style="margin-left:10px;"></div>
     </script>
 
     <script type="text/template" id="list_template">
@@ -122,7 +113,7 @@
             music.prototypes.FileView = Backbone.View.extend({
                 template: _.template($(list_row_template).html()),
                 events: {
-                    'click span[bind="name"]': 'click'
+                    'click a.list_row_item': 'click'
                 },
                 initialize: function() {
                     this.render();
@@ -131,11 +122,28 @@
                     bindings = _.extend(bindings, {
                       type: [
                         {
-                          selector: '[bind=name]',
+                          selector: '[bind=type]',
                           elAttribute: 'class',
                           converter: function(direction, type) {
-                            return type
+                            if (type === "directory") {
+                                return "icon-folder-close";
+                            } else {
+                                return "icon-music";
+                            }
                           }
+                        },
+                        {
+                            selector: '[bind=name]',
+                            elAttribute: 'text'
+                        },
+                      ],
+                      id: [
+                        {
+                            selector: '[bind=id]',
+                            elAttribute: 'id',
+                            converter: function(direction, id) {
+                                return id.replace('=', '');
+                            }
                         }
                       ]
                     });
@@ -148,15 +156,23 @@
                     console.log('you clicked ' + this.model.get('name'));
                     var self = this;
                     if (this.model.get('type') === "directory") {
-                        this.model.fetch({
-                            success: function(model) {
-                                var x = new music.prototypes.ListView({
-                                    collection: new music.prototypes.Files(model.get('files')),
-                                    parent: self,
-                                    el: self.$el.find('.list'),
-                                });
-                            }
-                        });
+                        var el = self.model.id.replace('=', '');
+                        if (this.model.get("open")) {
+                            $('#' + el).html('').hide();
+                            this.model.unset('open');
+                        } else {
+                            this.model.fetch({
+                                success: function(model) {
+                                    var x = new music.prototypes.ListView({
+                                        collection: new music.prototypes.Files(model.get('files')),
+                                        parent: self,
+                                        el: $('#' + el),
+                                    });
+                                    self.model.set('open', 1);
+                                    $('#' + el).show();
+                                }
+                            });
+                        }
                     } else {
                         console.log("playing song", this.model.get('path'));
                     }
