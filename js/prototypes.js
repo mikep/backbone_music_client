@@ -19,6 +19,18 @@ $(document).ready(function() {
         }
     });
 
+    music.prototypes.NowPlayingInfoView = Backbone.View.extend({
+        template: _.template($(now_playing_template).html()),
+        events: {
+        },
+        initialize: function() {
+            this.render();
+        },
+        render: function() {
+            this.$el.html(this.template());
+        }
+    });
+
     music.prototypes.PlayerControlsView = Backbone.View.extend({
         template: _.template($(player_controls_template).html()),
         events: {
@@ -35,8 +47,12 @@ $(document).ready(function() {
         render: function() {
             this.$el.html(this.template());
         },
-        play: function() {
-            console.log('clicked play');
+        play: function(fileModel) {
+            if (fileModel) {
+                console.log('clicked play for', fileModel);
+            } else {
+                console.log('clicked play');
+            }
         },
         backward: function() {
             console.log('clicked backward');
