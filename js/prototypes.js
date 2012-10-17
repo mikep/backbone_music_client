@@ -11,6 +11,10 @@ $(document).ready(function() {
         urlRoot: 'api/list_dir/',
     });
 
+    music.prototypes.ID3Tags = Backbone.DeepModel.extend({
+        urlRoot: 'api/song_info/'
+    });
+
     music.prototypes.Files = Backbone.Collection.extend({
         model: music.prototypes.File,
         url: 'api/list_dir/',
@@ -24,6 +28,7 @@ $(document).ready(function() {
         events: {
         },
         initialize: function() {
+            _.bindAll(this);
             this.render();
         },
         render: function() {
@@ -42,6 +47,7 @@ $(document).ready(function() {
             'click a.repeat': 'toggleRepeat',
         },
         initialize: function() {
+            _.bindAll(this);
             this.render();
         },
         render: function() {
@@ -81,17 +87,21 @@ $(document).ready(function() {
         }
     });
 
+
     music.prototypes.PlaylistItemView = Backbone.View.extend({
         template: _.template($(playlist_item_row_template).html()),
         events: {
             'click': 'removeFromPlaylist'
         },
         initialize: function() {
+            _.bindAll(this);
             this.render();
             music.collections.currentPlaylist.add(this.model);
-            console.log(this);
+
+            this.fetchID3Data();
+
             this.modelBinder = new Backbone.ModelBinder();
-            var bindings = Backbone.ModelBinder.createDefaultBindings(this.$el, 'bind');
+            var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
             bindings = _.extend(bindings, {
                 id: [
                 {
@@ -104,13 +114,23 @@ $(document).ready(function() {
                 },
                 ],
             });
-            this.modelBinder.bind(this.model, this.$el, bindings);
+            this.modelBinder.bind(this.model, this.el, bindings);
         },
         render: function() {
-            this.$el.append(this.template(this.model.toJSON()));
+            this.$el.html(this.template());
         },
         removeFromPlaylist: function() {
             console.log('removing: ', this.model);
+            music.collections.currentPlaylist.remove(this.model.id);
+            this.undelegateEvents();
+            this.remove();
+        },
+        fetchID3Data: function() {
+            this.model.set({
+                'id3Data': new music.prototypes.ID3Tags({id: this.model.id})
+            });
+
+            this.model.get('id3Data').fetch();
         }
     });
 
@@ -120,6 +140,7 @@ $(document).ready(function() {
             'click a.list_row_item': 'click'
         },
         initialize: function() {
+            _.bindAll(this);
             this.render();
             this.modelBinder = new Backbone.ModelBinder();
             var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
@@ -154,12 +175,13 @@ $(document).ready(function() {
             this.modelBinder.bind(this.model, this.el, bindings);
         },
         render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.html(this.template());
         },
         click: function(e) {
             console.log('you clicked ' + this.model.get('name'));
             var self = this;
             console.log(self.model.attributes);
+
             if (this.model.get('type') === "directory") {
                 var el = this.model.id.replace(/=/g, '');
                 console.log(el ,$('#' + el));
@@ -184,9 +206,8 @@ $(document).ready(function() {
 
                 var x = new music.prototypes.PlaylistItemView({
                     model: this.model,
-                    parent: this,
-                    el: $('#playlist')
                 });
+                $('#playlist').append(x.el);
             }
 
             return false;
@@ -196,6 +217,7 @@ $(document).ready(function() {
     music.prototypes['ListView'] = Backbone.View.extend({
         template: _.template($(list_template).html()),
         initialize: function() {
+            _.bindAll(this);
             this.collection.bind('add', this.add, this);
             this.collection.bind('reset', this.render, this);
             this.render();
