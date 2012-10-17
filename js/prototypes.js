@@ -19,6 +19,42 @@ $(document).ready(function() {
         }
     });
 
+    music.prototypes.PlayerControlsView = Backbone.View.extend({
+        template: _.template($(player_controls_template).html()),
+        events: {
+            'click a.play': 'play',
+            'click a.back': 'backward',
+            'click a.stop': 'stop',
+            'click a.forward': 'forward',
+            'click a.volume': 'changeVolume',
+            'click a.repeat': 'toggleRepeat',
+        },
+        initialize: function() {
+            this.render();
+        },
+        render: function() {
+            this.$el.html(this.template());
+        },
+        play: function() {
+            console.log('clicked play');
+        },
+        backward: function() {
+            console.log('clicked backward');
+        },
+        stop: function() {
+            console.log('clicked stop');
+        },
+        forward: function() {
+            console.log('clicked forward');
+        },
+        changeVolume: function() {
+            console.log('clicked changeVolume');
+        },
+        toggleRepeat: function() {
+            console.log('clicked toggleRepeat');
+        },
+    });
+
     music.prototypes.PlaylistItemView = Backbone.View.extend({
         template: _.template($(playlist_item_row_template).html()),
         events: {
@@ -118,7 +154,8 @@ $(document).ready(function() {
                     });
                 }
             } else {
-                console.log("playing song", this.model.get('path'));
+                console.log("playAing song", this.model.get('path'));
+
                 var x = new music.prototypes.PlaylistItemView({
                     model: this.model,
                     parent: this,

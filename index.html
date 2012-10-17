@@ -31,15 +31,6 @@
                 </div>
                 <div id="playlist" class="ui-sortable ui-droppable"></div>
                 <div id="player_controls">
-                    <div class="m-btn-group">
-                        <a href="#" class="m-btn icn-only"><i class="icon-backward"></i></a>
-                        <a href="#" class="m-btn icn-only"><i class="icon-play"></i></a>
-                        <a href="#" class="m-btn icn-only"><i class="icon-stop"></i></a>
-                        <a href="#" class="m-btn icn-only"><i class="icon-forward"></i></a>
-                        <a href="#" class="m-btn icn-only"><i class="icon-volume-off"></i></a>
-                        <a href="#" class="m-btn icn-only"><i class="icon-repeat"></i></a>
-                    </div>
-                    <audio id="player" controls onended="playlist_next()" src=""></audio>
                 </div>
             </div>
         </div>
@@ -93,5 +84,16 @@
         <div id="list"></div>
     </script>
 
+    <script type="text/template" id="player_controls_template">
+        <div class="m-btn-group">
+            <a href="#" class="m-btn icn-only back"><i class="icon-backward"></i></a>
+            <a href="#" class="m-btn icn-only play"><i class="icon-play"></i></a>
+            <a href="#" class="m-btn icn-only stop"><i class="icon-stop"></i></a>
+            <a href="#" class="m-btn icn-only forward"><i class="icon-forward"></i></a>
+            <a href="#" class="m-btn icn-only volume"><i class="icon-volume-off"></i></a>
+            <a href="#" class="m-btn icn-only repeat"><i class="icon-repeat"></i></a>
+        </div>
+        <audio id="player" controls src=""></audio>
+    </script>
 </body>
 </html>
