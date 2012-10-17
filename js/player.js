@@ -17,7 +17,7 @@ $(document).ready(function() {
         music.collections.currentPlaylist = new music.prototypes.Files();
 
         music.collections.currentPlaylist.on("add", function(file) {
-            music.views.playerControls.play(file);
+            music.views.playerControls.setSongToPlay(file);
         });
 
         music.views['listView'] = new music.prototypes.ListView({

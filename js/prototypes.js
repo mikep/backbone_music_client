@@ -47,12 +47,8 @@ $(document).ready(function() {
         render: function() {
             this.$el.html(this.template());
         },
-        play: function(fileModel) {
-            if (fileModel) {
-                console.log('clicked play for', fileModel);
-            } else {
-                console.log('clicked play');
-            }
+        play: function() {
+            console.log('clicked play');
         },
         backward: function() {
             console.log('clicked backward');
@@ -69,6 +65,20 @@ $(document).ready(function() {
         toggleRepeat: function() {
             console.log('clicked toggleRepeat');
         },
+        setSongToPlay: function(model) {
+            var playerEl = this.$el.find('#player');
+
+            if (playerEl.attr('src') === "") {
+                // If we aren't playing something, load the player with either the passed file
+                // or the first item in the play list.
+
+                if (model) {
+                    playerEl.attr('src', model.get('path'));
+                } else {
+                    playerEl.attr('src', music.collections.currentPlaylist.at(0).get('path'));
+                }
+            }
+        }
     });
 
     music.prototypes.PlaylistItemView = Backbone.View.extend({
@@ -97,7 +107,7 @@ $(document).ready(function() {
             this.modelBinder.bind(this.model, this.$el, bindings);
         },
         render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.append(this.template(this.model.toJSON()));
         },
         removeFromPlaylist: function() {
             console.log('removing: ', this.model);
