@@ -49,6 +49,7 @@ $(document).ready(function() {
         initialize: function() {
             _.bindAll(this);
             this.render();
+            this.$el.find('#player').bind('ended', this.logger);
         },
         render: function() {
             this.$el.html(this.template());
@@ -84,6 +85,11 @@ $(document).ready(function() {
                     playerEl.attr('src', music.collections.currentPlaylist.at(0).get('path'));
                 }
             }
+        },
+        logger: function(e) {
+            console.log(this);
+            console.log(e);
+            console.trace();
         }
     });
 
