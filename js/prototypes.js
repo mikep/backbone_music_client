@@ -23,6 +23,33 @@ $(document).ready(function() {
         }
     });
 
+    music.prototypes.MenuBarView = Backbone.View.extend({
+        template:  _.template($(menu_bar_template).html()),
+        events: {
+            'click #randomAlbumView': 'randomAlbum'
+        },
+        initialize: function() {
+            _.bindAll(this);
+            this.render();
+        },
+        render: function() {
+            this.$el.html(this.template());
+        },
+        randomAlbum: function() {
+            var list = $('#file_browser > div');
+            var random = Math.floor(Math.random()*list.length);
+
+            $(list[random]).find('a').click();
+            var pos = $(list[random]).position().top - 57; // Height of menubar
+            var speed = 1000;
+            if (pos < 1000) {
+                speed = 500;
+            }
+
+            $('#file_browser').animate({scrollTop: pos}, speed);
+        }
+    });
+
     music.prototypes.NowPlayingInfoView = Backbone.View.extend({
         template: _.template($(now_playing_template).html()),
         events: {
@@ -45,7 +72,7 @@ $(document).ready(function() {
                         selector: '#album_art',
                         elAttribute: 'src',
                         converter: function(direction, image) {
-                            if (image) {
+                            if (image && image !== '/static/album.jpg') {
                                 return "/backbone/srv/www/" + image;
                             } else {
                                 return "img/album.jpg";

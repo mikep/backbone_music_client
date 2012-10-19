@@ -11,6 +11,11 @@ $(document).ready(function() {
         parent: this
     });
 
+    music.views.menuBarView = new music.prototypes.MenuBarView({
+        el: $('#menu_bar'),
+        parent: this
+    });
+
     // Load Initial List
     $.getJSON('api/list_dir/', function(data) {
         music.collections.files = new music.prototypes.Files();

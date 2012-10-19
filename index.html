@@ -30,20 +30,7 @@
             </div>
         </div>
         <div id="right">
-            <div id="menu_bar">
-                <div class="m-btn-group toggle-buttons panels">
-                    <a href="#" class="m-btn active">Library</a>
-                    <a href="#" class="m-btn">Playlists</a>
-                    <a href="#" class="m-btn">Search</a>
-                    <a href="#" class="m-btn">Preferences</a>
-                </div>
-
-                <div class="m-btn-group">
-                    <a href="#" class="m-btn"><i class="icon-random"></i> Random Album</a>
-                </div>
-
-                <!--<input type='text' id='search' />-->
-            </div>
+            <div id="menu_bar"></div>
             <div id="file_browser" class="main_window" role="main"></div>
             <div id="playlist_browser" class="main_window" style="display:none;"></div>
             <div id="search_browser" class="main_window" style="display:none;"></div>
@@ -63,6 +50,23 @@
     <script src="js/player.js"></script>
 
     <!-- Underscore Templates -->
+    <script type="text/template" id="menu_bar_template">
+        <div class="m-btn-group toggle-buttons panels">
+            <a href="#" id="libraryView" class="m-btn active">Library</a>
+            <a href="#" id="playlistView" class="m-btn">Playlists</a>
+            <a href="#" id="searchView" class="m-btn">Search</a>
+            <a href="#" id="preferencesView" class="m-btn">Preferences</a>
+        </div>
+
+        <div class="m-btn-group">
+            <a href="#" class="m-btn" id="randomAlbumView">
+                <i class="icon-random"></i> Random Album
+            </a>
+        </div>
+
+        <!--<input type='text' id='search' />-->
+    </script>
+
     <script type="text/template" id="list_row_template">
         <a class="m-btn mini list_row_item" style="width:100%; text-align:left;">
             <i bind="type"></i>
@@ -85,12 +89,12 @@
 
     <script type="text/template" id="player_controls_template">
         <div class="m-btn-group">
-            <a href="#" class="m-btn icn-only back"><i class="icon-backward"></i></a>
-            <a href="#" class="m-btn icn-only play"><i class="icon-play"></i></a>
-            <a href="#" class="m-btn icn-only stop"><i class="icon-stop"></i></a>
-            <a href="#" class="m-btn icn-only forward"><i class="icon-forward"></i></a>
-            <a href="#" class="m-btn icn-only volume"><i class="icon-volume-up"></i></a>
-            <a href="#" class="m-btn icn-only repeat"><i class="icon-repeat"></i></a>
+            <a href="#" class="m-btn icn-only back black" title="Skip backwards 10 seconds"><i class="icon-backward icon-white"></i></a>
+            <a href="#" class="m-btn icn-only play black" title="Play/Pause"><i class="icon-play icon-white"></i></a>
+            <a href="#" class="m-btn icn-only stop black" title="Stop"><i class="icon-stop icon-white"></i></a>
+            <a href="#" class="m-btn icn-only forward black" title="Skip to next song in playlist"><i class="icon-forward icon-white"></i></a>
+            <a href="#" class="m-btn icn-only volume black" title="Toggle Mute/UnMute"><i class="icon-volume-up icon-white"></i></a>
+            <a href="#" class="m-btn icn-only repeat black" title="Toggle Playlist Repeat"><i class="icon-repeat icon-white"></i></a>
         </div>
         <audio id="player" controls src="" autoplay></audio>
     </script>
