@@ -66,7 +66,31 @@ $(document).ready(function() {
         forward: function() {
             console.log('clicked forward');
         },
-        changeVolume: function() {
+        changeVolume: function(e) {
+            var volume = this.$el.find('#player')[0].volume;
+            if (volume === 0) {
+                if (!this.currentVolume) {
+                    this.currentVolume = 1;
+                };
+
+                this.$el.find('#player')[0].volume = this.currentVolume;
+
+                if (e.target.tagName === 'A') {
+                    $(e.target).find('i').removeClass('icon-volume-off').addClass('icon-volume-up');
+                } else {
+                    $(e.target).removeClass('icon-volume-off').addClass('icon-volume-up');
+                }
+            } else {
+                this.currentVolume = volume;
+
+                this.$el.find('#player')[0].volume = 0;
+
+                if (e.target.tagName === 'A') {
+                    $(e.target).find('i').removeClass('icon-volume-up').addClass('icon-volume-off');
+                } else {
+                    $(e.target).removeClass('icon-volume-up').addClass('icon-volume-off');
+                }
+            }
             console.log('clicked changeVolume');
         },
         toggleRepeat: function() {
