@@ -72,7 +72,11 @@
     </script>
 
     <script type="text/template" id="playlist_item_row_template">
-        <div class="song" bind="id"><span bind="name"></span></div>
+        <div class="song" bind="id">
+            <span bind="artist"></span>
+            <span> &mdash; </span>
+            <span bind="title"></span>
+        </div>
     </script>
 
     <script type="text/template" id="list_template">
@@ -92,11 +96,11 @@
     </script>
 
     <script type="text/template" id="now_playing_template">
-        <img src="img/album.jpg" id="album_art" />
+        <img src="img/album.jpg" id="album_art" bind="image" />
         <div id="now_playing_container">
-            <p id="title"></p>
-            <p id="artist"></p>
-            <p id="album"></p>
+            <p id="title" bind="title"></p>
+            <p id="artist" bind="artist"></p>
+            <p id="album" bind="album"></p>
         </div>
     </script>
 </body>

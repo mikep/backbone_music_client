@@ -30,6 +30,32 @@ $(document).ready(function() {
         initialize: function() {
             _.bindAll(this);
             this.render();
+            this.setModelBindings();
+        },
+        setModelBindings: function() {
+            if (!this.model) {
+                this.model = new music.prototypes.ID3Tags();
+            }
+            
+            this.modelBinder = new Backbone.ModelBinder();
+            var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
+            bindings = _.extend(bindings, {
+                image: [
+                    {
+                        selector: '#album_art',
+                        elAttribute: 'src',
+                        converter: function(direction, image) {
+                            if (image) {
+                                return "/backbone/srv/www/" + image;
+                            } else {
+                                return "img/album.jpg";
+                            }
+                        }
+                    }
+                ],
+            });
+            this.modelBinder.bind(this.model, this.el, bindings);
+
         },
         render: function() {
             this.$el.html(this.template());
@@ -50,6 +76,7 @@ $(document).ready(function() {
             _.bindAll(this);
             this.render();
             this.$el.find('#player').bind('ended', this.logger);
+            this.$el.find('#player').bind('play', this.setID3Data);
         },
         render: function() {
             this.$el.html(this.template());
@@ -58,7 +85,8 @@ $(document).ready(function() {
             console.log('clicked play');
         },
         backward: function() {
-            console.log('clicked backward');
+            // Backwards button skips back 10 seconds
+            $('#player')[0].currentTime = $('#player')[0].currentTime - 10;
         },
         stop: function() {
             console.log('clicked stop');
@@ -105,10 +133,19 @@ $(document).ready(function() {
 
                 if (model) {
                     playerEl.attr('src', model.get('path'));
+                    this.model = model;
                 } else {
                     playerEl.attr('src', music.collections.currentPlaylist.at(0).get('path'));
+                    this.model = music.collections.currentPlaylist.at(0);
                 }
             }
+
+        },
+        setID3Data: function() {
+            console.log(this.model);
+            music.views.nowPlaying.model = this.model.get('id3Data');
+            // FIXME: This should be bound to model change in the view.
+            music.views.nowPlaying.setModelBindings();
         },
         logger: function(e) {
             console.log(this);
@@ -129,19 +166,32 @@ $(document).ready(function() {
             music.collections.currentPlaylist.add(this.model);
 
             this.fetchID3Data();
-
+        },
+        setModelBindings: function() {            
             this.modelBinder = new Backbone.ModelBinder();
             var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
             bindings = _.extend(bindings, {
                 id: [
-                {
-                    selector: '[bind=id]',
-                    elAttribute: 'id',
-                },
-                {
-                    selector: '[bind=name]',
-                    elAttribute: 'text'
-                },
+                    {
+                        selector: '[bind=id]',
+                        elAttribute: 'id',
+                    },
+                ],
+                id3Data: [
+                    {
+                        selector: '[bind=artist]',
+                        elAttribute: 'text',
+                        converter: function(direction, id3) {
+                            return id3.get('artist')[0];
+                        }
+                    },
+                    {
+                        selector: '[bind=title]',
+                        elAttribute: 'text',
+                        converter: function(direction, id3) {
+                            return id3.get('title')[0];
+                        }
+                    },
                 ],
             });
             this.modelBinder.bind(this.model, this.el, bindings);
@@ -160,7 +210,12 @@ $(document).ready(function() {
                 'id3Data': new music.prototypes.ID3Tags({id: this.model.id})
             });
 
-            this.model.get('id3Data').fetch();
+            var self = this;
+            this.model.get('id3Data').fetch({
+                success: function() {
+                    self.setModelBindings();
+                }
+            });
         }
     });
 
