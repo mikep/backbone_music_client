@@ -10,14 +10,16 @@ $(document).ready(function() {
         el: $('#now_playing'),
         parent: this
     });
-    
-    // Load Initial List 
+
+    // Load Initial List
     $.getJSON('api/list_dir/', function(data) {
         music.collections.files = new music.prototypes.Files();
         music.collections.currentPlaylist = new music.prototypes.Files();
 
         music.collections.currentPlaylist.on("add", function(file) {
-            music.views.playerControls.setSongToPlay(file);
+            if (music.collections.currentPlaylist.indexOf(file) === 0) {
+                music.views.playerControls.setSongToPlay(file);
+            }
         });
 
         music.views['listView'] = new music.prototypes.ListView({

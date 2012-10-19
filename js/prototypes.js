@@ -36,7 +36,7 @@ $(document).ready(function() {
             if (!this.model) {
                 this.model = new music.prototypes.ID3Tags();
             }
-            
+
             this.modelBinder = new Backbone.ModelBinder();
             var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
             bindings = _.extend(bindings, {
@@ -93,6 +93,7 @@ $(document).ready(function() {
         },
         forward: function() {
             console.log('clicked forward');
+            this.nextSong();
         },
         changeVolume: function(e) {
             var volume = this.$el.find('#player')[0].volume;
@@ -124,6 +125,11 @@ $(document).ready(function() {
         toggleRepeat: function() {
             console.log('clicked toggleRepeat');
         },
+        nextSong: function() {
+            var index = music.collections.currentPlaylist.indexOf(this.model);
+            var next = music.collections.currentPlaylist.at(index + 1);
+            this.setSongToPlay(next);
+        },
         setSongToPlay: function(model) {
             var playerEl = this.$el.find('#player');
 
@@ -138,8 +144,10 @@ $(document).ready(function() {
                     playerEl.attr('src', music.collections.currentPlaylist.at(0).get('path'));
                     this.model = music.collections.currentPlaylist.at(0);
                 }
+            } else if (playerEl.attr('src') !== "" && model) {
+                playerEl.attr('src', model.get('path'));
+                this.model = model;
             }
-
         },
         setID3Data: function() {
             console.log(this.model);
@@ -167,7 +175,7 @@ $(document).ready(function() {
 
             this.fetchID3Data();
         },
-        setModelBindings: function() {            
+        setModelBindings: function() {
             this.modelBinder = new Backbone.ModelBinder();
             var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
             bindings = _.extend(bindings, {
@@ -200,6 +208,9 @@ $(document).ready(function() {
             this.$el.html(this.template());
         },
         removeFromPlaylist: function() {
+            if (this.model.id === music.views.playerControls.model.id) {
+                music.views.playerControls.nextSong();
+            }
             console.log('removing: ', this.model);
             music.collections.currentPlaylist.remove(this.model.id);
             this.undelegateEvents();
