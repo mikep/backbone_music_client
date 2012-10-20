@@ -237,15 +237,12 @@ $(document).ready(function() {
         render: function() {
             this.$el.html(this.template());
         },
-        removeFromPlaylist: function(model) {
-            if (!model) {
-                model = this.model;
-            }
-            if (model.id === music.views.playerControls.model.id) {
+        removeFromPlaylist: function() {
+            if (this.model.id === music.views.playerControls.model.id) {
                 music.views.playerControls.forward();
             }
-            console.log('removing: ', model);
-            music.collections.currentPlaylist.remove(model.id);
+            console.log('removing: ', this.model);
+            music.collections.currentPlaylist.remove(this.model.id);
             this.undelegateEvents();
             this.remove();
         },
