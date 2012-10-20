@@ -390,11 +390,11 @@ $(document).ready(function() {
             });
         },
         add: function(file) {
-            music.views[file.get('id')] = new music.prototypes.FileView({
+            var x = new music.prototypes.FileView({
                 model: file,
                 parent: this,
             });
-            this.$el.append(music.views[file.get('id')].el);
+            this.$el.append(x.el);
         }
     });
 });
