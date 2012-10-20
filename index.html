@@ -71,6 +71,7 @@
         <a class="m-btn mini list_row_item" style="width:100%; text-align:left;">
             <i bind="type"></i>
             <span bind="name"></span>
+            <i class="icon-plus-sign addAlbumToPlaylist" style="display:none;"></i>
         </a>
         <div bind="id" style="margin-left:10px;" class="list"></div>
     </script>
@@ -88,7 +89,7 @@
     </script>
 
     <script type="text/template" id="player_controls_template">
-        <div class="m-btn-group">
+        <div class="m-btn-group controls">
             <a href="#" class="m-btn icn-only back black" title="Skip backwards 10 seconds"><i class="icon-backward icon-white"></i></a>
             <a href="#" class="m-btn icn-only play black" title="Play/Pause"><i class="icon-play icon-white"></i></a>
             <a href="#" class="m-btn icn-only stop black" title="Stop"><i class="icon-stop icon-white"></i></a>

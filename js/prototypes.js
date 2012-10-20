@@ -266,7 +266,8 @@ $(document).ready(function() {
     music.prototypes.FileView = Backbone.View.extend({
         template: _.template($(list_row_template).html()),
         events: {
-            'click a.list_row_item': 'click'
+            'click a.list_row_item': 'click',
+            'click .addAlbumToPlaylist': 'addAlbumToPlaylist'
         },
         initialize: function() {
             _.bindAll(this);
@@ -306,6 +307,26 @@ $(document).ready(function() {
         render: function() {
             this.$el.html(this.template());
         },
+        showAddAllIcon: function() {
+            this.$el.find('.addAlbumToPlaylist:first').fadeIn('fast');
+        },
+        hideAddAllIcon: function() {
+            this.$el.find('.addAlbumToPlaylist').fadeOut('fast');
+        },
+        addAlbumToPlaylist: function() {
+            console.log(this.model);
+            var self = this;
+            this.model.get('files').each(function (model, i) {
+                self.createPlaylistItem(model);
+            });
+            return false;
+        },
+        createPlaylistItem: function(fileModel) {
+            var x = new music.prototypes.PlaylistItemView({
+                model: fileModel
+            });
+            $('#playlist').append(x.el);
+        },
         click: function(e) {
             console.log('you clicked ' + this.model.get('name'));
             var self = this;
@@ -315,28 +336,38 @@ $(document).ready(function() {
                 var el = this.model.id.replace(/=/g, '');
                 console.log(el ,$('#' + el));
                 if (this.model.get("open")) {
-                    $('#' + el).html('').hide();
+                    $('#' + el).slideUp('fast', function() {
+                        $(this).html('');
+                    })
                     this.model.unset('open');
+                    this.$el.find('i[bind="type"]:first')
+                        .removeClass('icon-folder-open')
+                        .addClass('icon-folder-close');
+                    self.hideAddAllIcon();
                 } else {
                     this.model.fetch({
-                        success: function(model) {
+                        success: function(data) {
+                            self.model.set({
+                                'files': new music.prototypes.Files(data.get('files'))
+                            });
+                            
                             var x = new music.prototypes.ListView({
-                                collection: new music.prototypes.Files(model.get('files')),
+                                collection: self.model.get('files'),
                                 parent: self,
                                 el: $('#' + el),
                             });
                             self.model.set('open', 1);
-                            $('#' + el).show();
+                            $('#' + el).slideDown();
+                            self.showAddAllIcon();
+                            self.$el.find('i[bind="type"]:first')
+                                .removeClass('icon-folder-close')
+                                .addClass('icon-folder-open');
                         }
                     });
                 }
             } else {
                 console.log("playAing song", this.model.get('path'));
-
-                var x = new music.prototypes.PlaylistItemView({
-                    model: this.model,
-                });
-                $('#playlist').append(x.el);
+                this.createPlaylistItem(this.model);
             }
 
             return false;
