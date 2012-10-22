@@ -76,6 +76,15 @@
         <div bind="id" style="margin-left:10px;" class="list"></div>
     </script>
 
+    <script type="text/template" id="playlist_row_template">
+        <a class="m-btn mini list_row_item" style="width:100%; text-align:left;">
+            <i class="icon-music"></i>
+            <span bind="directory" style="font-weight:bold;"></span>
+            <span> &mdash; </span>
+            <span bind="file"></span>
+        </a>
+    </script>
+
     <script type="text/template" id="playlist_item_row_template">
         <div class="song" bind="id">
             <span bind="artist"></span>

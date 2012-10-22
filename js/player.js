@@ -16,6 +16,13 @@ $(document).ready(function() {
         parent: this
     });
 
+    music.collections.playlists = new music.prototypes.Playlists();
+    music.views.playlistBrowserView = new music.prototypes.PlaylistBrowserView({
+        el: $('#playlist_browser'),
+        collection: music.collections.playlists,
+        parent: this
+    });
+
     // Load Initial List
     $.getJSON('api/list_dir/', function(data) {
         music.collections.files = new music.prototypes.Files();

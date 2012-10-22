@@ -17,6 +17,21 @@ $(document).ready(function() {
         urlRoot: 'api/song_info/'
     });
 
+    music.prototypes.Playlist = Backbone.DeepModel.extend({
+        urlRoot: 'api/pl/'
+    });
+
+    music.prototypes.Playlists = Backbone.Collection.extend({
+        model: music.prototypes.Playlist,
+        url: 'api/pl/' ,
+        comparator: function(model) {
+            return model.get('name');
+        },
+        parse: function(response) {
+            return response.playlists;
+        }
+    });
+
     music.prototypes.Files = Backbone.Collection.extend({
         model: music.prototypes.File,
         url: 'api/list_dir/',
@@ -54,6 +69,7 @@ $(document).ready(function() {
         changePanel: function(e) {
             this.views = {
                 'libraryView': music.views.listView,
+                'playlistView': music.views.playlistBrowserView
             };
 
             music.views.currentMainView.$el.fadeOut('fast');
@@ -64,6 +80,65 @@ $(document).ready(function() {
 
             $('.panels a').removeClass('active');
             $(e.target).addClass('active');
+        }
+    });
+
+    music.prototypes.PlaylistBrowserView = Backbone.View.extend({
+        template: _.template($(list_template).html()),
+        events: {
+        },
+        initialize: function() {
+            _.bindAll(this);
+            this.collection.bind('add', this.add, this);
+            this.collection.bind('reset', this.render, this);
+            this.render();
+        },
+        render: function() {
+            this.$el.html(this.template());
+            var self = this;
+            this.collection.each(function(account){
+                self.add(account);
+            });
+        },
+        add: function(playlistFile) {
+            var x = new music.prototypes.Playlist({
+                model: playlistFile,
+                parent: this,
+            });
+            this.$el.append(x.el);
+        },
+        fetchInitialList: function() {
+            this.collection.fetch();
+        }
+    });
+
+    music.prototypes.Playlist = Backbone.View.extend({
+        template: _.template($(playlist_row_template).html()),
+        events: {
+        },
+        initialize: function() {
+            _.bindAll(this);
+            this.render();
+            this.modelBinder = new Backbone.ModelBinder();
+            var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'bind');
+            bindings = _.extend(bindings, {
+                directory: [
+                    {
+                        selector: '[bind=directory]',
+                        elAttribute: 'text'
+                    },
+                ],
+                file: [
+                    {
+                        selector: '[bind=file]',
+                        elAttribute: 'text',
+                    }
+                ]
+            });
+            this.modelBinder.bind(this.model, this.el, bindings);
+        },
+        render: function() {
+            this.$el.html(this.template());
         }
     });
 
