@@ -124,10 +124,11 @@ $(document).ready(function() {
             console.log('clicked forward');
             var index = music.collections.currentPlaylist.indexOf(this.model);
             var next = music.collections.currentPlaylist.at(index + 1);
-            if (!music.settings.repeat) {
+            // FIXME Add settings.
+            //if (!music.settings.repeat) {
                 music.collections.currentPlaylist.remove(this.model);
-                $('div#' + this.model.id).remove();
-            }
+                $('#' + this.model.id).remove();
+            //}
             this.setSongToPlay(next);
         },
         changeVolume: function(e) {
@@ -178,6 +179,11 @@ $(document).ready(function() {
                 playerEl.attr('src', model.get('path'));
                 this.model = model;
             }
+
+            // remove this hack by installing everything together
+            var src = playerEl.attr('src');
+            src = src.replace('srv/www', '');
+            playerEl.attr('src', "http://home.michaelpucyk.com:8080/" + src);
         },
         setID3Data: function() {
             console.log(this.model);
@@ -293,9 +299,6 @@ $(document).ready(function() {
                 {
                     selector: '[bind=id]',
                     elAttribute: 'id',
-                    converter: function(direction, id) {
-                        return id.replace(/=/g, '');
-                    }
                 }
                 ]
             });
@@ -330,7 +333,7 @@ $(document).ready(function() {
             console.log(self.model.attributes);
 
             if (this.model.get('type') === "directory") {
-                var el = this.model.id.replace(/=/g, '');
+                var el = this.model.id;
                 console.log(el ,$('#' + el));
                 if (this.model.get("open")) {
                     $('#' + el).slideUp('fast', function() {
@@ -347,7 +350,7 @@ $(document).ready(function() {
                             self.model.set({
                                 'files': new music.prototypes.Files(data.get('files'))
                             });
-                            
+
                             var x = new music.prototypes.ListView({
                                 collection: self.model.get('files'),
                                 parent: self,
@@ -371,7 +374,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes['ListView'] = Backbone.View.extend({
+    music.prototypes.ListView = Backbone.View.extend({
         template: _.template($(list_template).html()),
         initialize: function() {
             _.bindAll(this);
