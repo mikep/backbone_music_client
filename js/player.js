@@ -34,6 +34,8 @@ $(document).ready(function() {
         });
 
         music.collections.files.reset(data.files);
+
+        music.views.currentMainView = music.views.listView;
     });
 
 });

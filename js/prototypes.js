@@ -28,7 +28,8 @@ $(document).ready(function() {
     music.prototypes.MenuBarView = Backbone.View.extend({
         template:  _.template($(menu_bar_template).html()),
         events: {
-            'click #randomAlbumView': 'randomAlbum'
+            'click #randomAlbumView': 'randomAlbum',
+            'click .panels a': 'changePanel'
         },
         initialize: function() {
             _.bindAll(this);
@@ -49,6 +50,20 @@ $(document).ready(function() {
             }
 
             $('#file_browser').animate({scrollTop: pos}, speed);
+        },
+        changePanel: function(e) {
+            this.views = {
+                'libraryView': music.views.listView,
+            };
+
+            music.views.currentMainView.$el.fadeOut('fast');
+            if (this.views.hasOwnProperty(e.target.id)) {
+                this.views[e.target.id].$el.fadeIn('fast');
+                music.views.currentMainView = this.views[e.target.id];
+            }
+
+            $('.panels a').removeClass('active');
+            $(e.target).addClass('active');
         }
     });
 
