@@ -164,8 +164,8 @@ $(document).ready(function() {
                         selector: '#album_art',
                         elAttribute: 'src',
                         converter: function(direction, image) {
-                            if (image && image !== '/static/album.jpg') {
-                                return "/backbone/srv/www/" + image;
+                            if (image && image !== '/album.jpg') {
+                                return image;
                             } else {
                                 return "img/album.jpg";
                             }
@@ -269,11 +269,6 @@ $(document).ready(function() {
                 playerEl.attr('src', model.get('path'));
                 this.model = model;
             }
-
-            // remove this hack by installing everything together
-            var src = playerEl.attr('src');
-            src = src.replace('srv/www', '');
-            playerEl.attr('src', "http://home.michaelpucyk.com:8080/" + src);
         },
         setID3Data: function() {
             console.log(this.model);
