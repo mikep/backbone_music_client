@@ -23,9 +23,13 @@ $(document).ready(function() {
 
     music.prototypes.Playlists = Backbone.Collection.extend({
         model: music.prototypes.Playlist,
-        url: 'api/pl/' ,
+        url: 'api/pl/',
         comparator: function(model) {
-            return model.get('name');
+            if (model.get('track_number')) {
+                return model.get('track_number');
+            } else {
+                return model.get('name');
+            }
         },
         parse: function(response) {
             return response.playlists;
@@ -36,7 +40,11 @@ $(document).ready(function() {
         model: music.prototypes.File,
         url: 'api/list_dir/',
         comparator: function(model) {
-            return model.get('name');
+            if (model.get('track_number')) {
+                return model.get('track_number');
+            } else {
+                return model.get('name');
+            }
         }
     });
 
@@ -76,6 +84,10 @@ $(document).ready(function() {
             if (this.views.hasOwnProperty(e.target.id)) {
                 this.views[e.target.id].$el.fadeIn('fast');
                 music.views.currentMainView = this.views[e.target.id];
+
+                if (music.views.currentMainView.hasOwnProperty('activate')) {
+                    music.views.currentMainView.activate();
+                }
             }
 
             $('.panels a').removeClass('active');
@@ -107,7 +119,12 @@ $(document).ready(function() {
             });
             this.$el.append(x.el);
         },
+        activate: function() {
+            // Actions to preform when view becomes active
+            this.fetchInitialList();
+        },
         fetchInitialList: function() {
+            console.log('fetching list of playlists');
             this.collection.fetch();
         }
     });
@@ -115,6 +132,7 @@ $(document).ready(function() {
     music.prototypes.Playlist = Backbone.View.extend({
         template: _.template($(playlist_row_template).html()),
         events: {
+            'click a.list_row_item': 'click',
         },
         initialize: function() {
             _.bindAll(this);
@@ -139,6 +157,28 @@ $(document).ready(function() {
         },
         render: function() {
             this.$el.html(this.template());
+        },
+        click: function(e) {
+            var self = this;
+            console.log(self.model.attributes);
+
+            var el = this.model.id;
+            console.log(el ,$('#' + el));
+            this.model.fetch({
+                success: function(data) {
+                    self.model.set({
+                        'files': new music.prototypes.Files(data.get('files'))
+                    });
+                    self.model.get('files').each(function (model, i) {
+                        var x = new music.prototypes.PlaylistItemView({
+                            model: model
+                        });
+                        $('#playlist').append(x.el);
+                    });
+                }
+            });
+
+            return false;
         }
     });
 
