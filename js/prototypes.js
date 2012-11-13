@@ -235,7 +235,7 @@ $(document).ready(function() {
             _.bindAll(this);
             this.render();
             this.$el.find('#player').bind('ended', this.forward);
-            this.$el.find('#player').bind('play', this.setID3Data);
+            this.$el.find('#player').bind('play', this.playing);
         },
         render: function() {
             this.$el.html(this.template());
@@ -315,6 +315,19 @@ $(document).ready(function() {
             music.views.nowPlaying.model = this.model.get('id3Data');
             // FIXME: This should be bound to model change in the view.
             music.views.nowPlaying.setModelBindings();
+        },
+        scrollTitle: function(title) {
+            if (title) {
+                document.title = title;
+                clearTimeout(this.titleScrollTimeout);
+            }
+            document.title = document.title.substring(1)+document.title.substring(0,1);
+            this.titleScrollTimeout = setTimeout(this.scrollTitle, 500);
+        },
+        playing: function(e) {
+            this.setID3Data();
+            var title = this.model.get('id3Data').get('artist') + ' - ' + this.model.get('id3Data').get('title');
+            this.scrollTitle(title);
         },
         logger: function(e) {
             console.log(this);
