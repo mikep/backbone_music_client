@@ -230,6 +230,7 @@ $(document).ready(function() {
             'click a.forward': 'forward',
             'click a.volume': 'changeVolume',
             'click a.repeat': 'toggleRepeat',
+            'click #mobile_playlist_toggle': 'toggleMobileView',
         },
         initialize: function() {
             _.bindAll(this);
@@ -239,6 +240,22 @@ $(document).ready(function() {
         },
         render: function() {
             this.$el.html(this.template());
+        },
+        toggleMobileView: function(el) {
+            console.log(el);
+            console.log($(el.targetElement));
+            if ($('#file_browser:visible').length > 0) {
+                $('#file_browser').fadeOut('fast', function() {
+                    $('#playlist').appendTo('#right');
+                    $('#right #playlist').fadeIn('fast');
+                    $(el.target).text('Show File Browser');
+                });
+            } else {
+                $('#playlist').fadeOut('fast', function() {
+                    $('#file_browser').fadeIn('fast');
+                    $(el.target).text('Show Playlist');
+                });
+            }
         },
         play: function() {
             console.log('clicked play');

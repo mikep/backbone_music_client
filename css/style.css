@@ -325,6 +325,10 @@ div#file_browser div.list a.list_row_item {
     padding-top: 3px;
     text-shadow: rgba(0, 0, 0, 0.796875) 0px 1px 1px;
 }
+
+#mobile_playlist_toggle {
+    display:none;
+}
 /* =============================================================================
    Media Queries
    ========================================================================== */
@@ -339,7 +343,6 @@ div#file_browser div.list a.list_row_item {
     #left, #right {
         float:none;
         width:100%;
-        overflow:auto;
     }
     #album_art,#menu_bar,#playlist {
         display: none;
@@ -349,6 +352,22 @@ div#file_browser div.list a.list_row_item {
     }
     div#file_browser a.list_row_item {
         padding:10px 0px;
+    }
+    #mobile_playlist_toggle {
+        display:block;
+        width:80px;
+        text-align: center;
+        color:#fff;
+        font-size: 10px;
+        position:absolute;
+        left:-webkit-calc(50% - 40px);
+        left:calc(50% - 40px);
+        padding:3px;
+        z-index:1010;
+        background-color:#333;
+        background-image:url('../img/bg.png');
+        border-radius: 0px 0px 8px 8px;
+        cursor:pointer;
     }
 }
 
