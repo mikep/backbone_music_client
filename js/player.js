@@ -1,48 +1,48 @@
 $(document).ready(function() {
 
     // Init Views.
-    music.views.playerControls = new music.prototypes.PlayerControlsView({
+    media.views.playerControls = new media.prototypes.PlayerControlsView({
         el: $('#player_controls'),
         parent: this
     });
 
-    music.views.nowPlaying = new music.prototypes.NowPlayingInfoView({
+    media.views.nowPlaying = new media.prototypes.NowPlayingInfoView({
         el: $('#now_playing'),
         parent: this
     });
 
-    music.views.menuBarView = new music.prototypes.MenuBarView({
+    media.views.menuBarView = new media.prototypes.MenuBarView({
         el: $('#menu_bar'),
         parent: this
     });
 
-    music.collections.playlists = new music.prototypes.Playlists();
-    music.views.playlistBrowserView = new music.prototypes.PlaylistBrowserView({
+    media.collections.playlists = new media.prototypes.Playlists();
+    media.views.playlistBrowserView = new media.prototypes.PlaylistBrowserView({
         el: $('#playlist_browser'),
-        collection: music.collections.playlists,
+        collection: media.collections.playlists,
         parent: this
     });
 
     // Load Initial List
     $.getJSON('api/list_dir/', function(data) {
-        music.collections.files = new music.prototypes.Files();
-        music.collections.currentPlaylist = new music.prototypes.Files();
+        media.collections.files = new media.prototypes.Files();
+        media.collections.currentPlaylist = new media.prototypes.Files();
 
-        music.collections.currentPlaylist.on("add", function(file) {
-            if (music.collections.currentPlaylist.indexOf(file) === 0) {
-                music.views.playerControls.setSongToPlay(file);
+        media.collections.currentPlaylist.on("add", function(file) {
+            if (media.collections.currentPlaylist.indexOf(file) === 0) {
+                media.views.playerControls.setSongToPlay(file);
             }
         });
 
-        music.views['listView'] = new music.prototypes.ListView({
+        media.views['listView'] = new media.prototypes.ListView({
             el: $('div[role="main"]'),
-            collection: music.collections.files,
+            collection: media.collections.files,
             parent: this
         });
 
-        music.collections.files.reset(data.files);
+        media.collections.files.reset(data.files);
 
-        music.views.currentMainView = music.views.listView;
+        media.views.currentMainView = media.views.listView;
     });
 
 });

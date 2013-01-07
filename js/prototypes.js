@@ -1,28 +1,28 @@
 $(document).ready(function() {
 
-    window.music = {};
-    music.templates = {}
-    music.prototypes = {};
-    music.models = {};
-    music.collections = {};
-    music.views = {};
-    music.views.playlist = {};
-    music.settings = {};
+    window.media = {};
+    media.templates = {}
+    media.prototypes = {};
+    media.models = {};
+    media.collections = {};
+    media.views = {};
+    media.views.playlist = {};
+    media.settings = {};
 
-    music.prototypes.File = Backbone.DeepModel.extend({
+    media.prototypes.File = Backbone.DeepModel.extend({
         urlRoot: 'api/list_dir/',
     });
 
-    music.prototypes.ID3Tags = Backbone.DeepModel.extend({
+    media.prototypes.ID3Tags = Backbone.DeepModel.extend({
         urlRoot: 'api/song_info/'
     });
 
-    music.prototypes.Playlist = Backbone.DeepModel.extend({
+    media.prototypes.Playlist = Backbone.DeepModel.extend({
         urlRoot: 'api/pl/'
     });
 
-    music.prototypes.Playlists = Backbone.Collection.extend({
-        model: music.prototypes.Playlist,
+    media.prototypes.Playlists = Backbone.Collection.extend({
+        model: media.prototypes.Playlist,
         url: 'api/pl/',
         comparator: function(model) {
             if (model.get('track_number')) {
@@ -36,8 +36,8 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.Files = Backbone.Collection.extend({
-        model: music.prototypes.File,
+    media.prototypes.Files = Backbone.Collection.extend({
+        model: media.prototypes.File,
         url: 'api/list_dir/',
         comparator: function(model) {
             if (model.get('track_number')) {
@@ -48,7 +48,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.MenuBarView = Backbone.View.extend({
+    media.prototypes.MenuBarView = Backbone.View.extend({
         template:  _.template($(menu_bar_template).html()),
         events: {
             'click #randomAlbumView': 'randomAlbum',
@@ -76,17 +76,17 @@ $(document).ready(function() {
         },
         changePanel: function(e) {
             this.views = {
-                'libraryView': music.views.listView,
-                'playlistView': music.views.playlistBrowserView
+                'libraryView': media.views.listView,
+                'playlistView': media.views.playlistBrowserView
             };
 
-            music.views.currentMainView.$el.fadeOut('fast');
+            media.views.currentMainView.$el.fadeOut('fast');
             if (this.views.hasOwnProperty(e.target.id)) {
                 this.views[e.target.id].$el.fadeIn('fast');
-                music.views.currentMainView = this.views[e.target.id];
+                media.views.currentMainView = this.views[e.target.id];
 
-                if (music.views.currentMainView.hasOwnProperty('activate')) {
-                    music.views.currentMainView.activate();
+                if (media.views.currentMainView.hasOwnProperty('activate')) {
+                    media.views.currentMainView.activate();
                 }
             }
 
@@ -95,7 +95,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.PlaylistBrowserView = Backbone.View.extend({
+    media.prototypes.PlaylistBrowserView = Backbone.View.extend({
         template: _.template($(list_template).html()),
         events: {
         },
@@ -113,7 +113,7 @@ $(document).ready(function() {
             });
         },
         add: function(playlistFile) {
-            var x = new music.prototypes.Playlist({
+            var x = new media.prototypes.Playlist({
                 model: playlistFile,
                 parent: this,
             });
@@ -129,7 +129,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.Playlist = Backbone.View.extend({
+    media.prototypes.Playlist = Backbone.View.extend({
         template: _.template($(playlist_row_template).html()),
         events: {
             'click a.list_row_item': 'click',
@@ -167,10 +167,10 @@ $(document).ready(function() {
             this.model.fetch({
                 success: function(data) {
                     self.model.set({
-                        'files': new music.prototypes.Files(data.get('files'))
+                        'files': new media.prototypes.Files(data.get('files'))
                     });
                     self.model.get('files').each(function (model, i) {
-                        var x = new music.prototypes.PlaylistItemView({
+                        var x = new media.prototypes.PlaylistItemView({
                             model: model
                         });
                         $('#playlist').append(x.el);
@@ -182,7 +182,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.NowPlayingInfoView = Backbone.View.extend({
+    media.prototypes.NowPlayingInfoView = Backbone.View.extend({
         template: _.template($(now_playing_template).html()),
         events: {
         },
@@ -193,7 +193,7 @@ $(document).ready(function() {
         },
         setModelBindings: function() {
             if (!this.model) {
-                this.model = new music.prototypes.ID3Tags();
+                this.model = new media.prototypes.ID3Tags();
             }
 
             this.modelBinder = new Backbone.ModelBinder();
@@ -221,7 +221,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.PlayerControlsView = Backbone.View.extend({
+    media.prototypes.PlayerControlsView = Backbone.View.extend({
         template: _.template($(player_controls_template).html()),
         events: {
             'click a.play': 'play',
@@ -269,11 +269,11 @@ $(document).ready(function() {
         },
         forward: function() {
             console.log('clicked forward');
-            var index = music.collections.currentPlaylist.indexOf(this.model);
-            var next = music.collections.currentPlaylist.at(index + 1);
+            var index = media.collections.currentPlaylist.indexOf(this.model);
+            var next = media.collections.currentPlaylist.at(index + 1);
             // FIXME Add settings.
-            //if (!music.settings.repeat) {
-                music.collections.currentPlaylist.remove(this.model);
+            //if (!media.settings.repeat) {
+                media.collections.currentPlaylist.remove(this.model);
                 $('#' + this.model.id).remove();
             //}
             this.setSongToPlay(next);
@@ -319,8 +319,8 @@ $(document).ready(function() {
                     playerEl.attr('src', model.get('path'));
                     this.model = model;
                 } else {
-                    playerEl.attr('src', music.collections.currentPlaylist.at(0).get('path'));
-                    this.model = music.collections.currentPlaylist.at(0);
+                    playerEl.attr('src', media.collections.currentPlaylist.at(0).get('path'));
+                    this.model = media.collections.currentPlaylist.at(0);
                 }
             } else if (playerEl.attr('src') !== "" && model) {
                 playerEl.attr('src', model.get('path'));
@@ -329,9 +329,9 @@ $(document).ready(function() {
         },
         setID3Data: function() {
             console.log(this.model);
-            music.views.nowPlaying.model = this.model.get('id3Data');
+            media.views.nowPlaying.model = this.model.get('id3Data');
             // FIXME: This should be bound to model change in the view.
-            music.views.nowPlaying.setModelBindings();
+            media.views.nowPlaying.setModelBindings();
         },
         scrollTitle: function(title) {
             if (title) {
@@ -354,7 +354,7 @@ $(document).ready(function() {
     });
 
 
-    music.prototypes.PlaylistItemView = Backbone.View.extend({
+    media.prototypes.PlaylistItemView = Backbone.View.extend({
         template: _.template($(playlist_item_row_template).html()),
         events: {
             'click': 'removeFromPlaylist'
@@ -362,7 +362,7 @@ $(document).ready(function() {
         initialize: function() {
             _.bindAll(this);
             this.render();
-            music.collections.currentPlaylist.add(this.model);
+            media.collections.currentPlaylist.add(this.model);
 
             this.fetchID3Data();
         },
@@ -399,17 +399,17 @@ $(document).ready(function() {
             this.$el.html(this.template());
         },
         removeFromPlaylist: function() {
-            if (this.model.id === music.views.playerControls.model.id) {
-                music.views.playerControls.forward();
+            if (this.model.id === media.views.playerControls.model.id) {
+                media.views.playerControls.forward();
             }
             console.log('removing: ', this.model);
-            music.collections.currentPlaylist.remove(this.model.id);
+            media.collections.currentPlaylist.remove(this.model.id);
             this.undelegateEvents();
             this.remove();
         },
         fetchID3Data: function() {
             this.model.set({
-                'id3Data': new music.prototypes.ID3Tags({id: this.model.id})
+                'id3Data': new media.prototypes.ID3Tags({id: this.model.id})
             });
 
             var self = this;
@@ -421,7 +421,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.FileView = Backbone.View.extend({
+    media.prototypes.FileView = Backbone.View.extend({
         template: _.template($(list_row_template).html()),
         events: {
             'click a.list_row_item': 'click',
@@ -441,7 +441,7 @@ $(document).ready(function() {
                     if (type === "directory") {
                         return "icon-folder-close";
                     } else {
-                        return "icon-music";
+                        return "icon-media";
                     }
                     }
                 },
@@ -477,7 +477,7 @@ $(document).ready(function() {
             return false;
         },
         createPlaylistItem: function(fileModel) {
-            var x = new music.prototypes.PlaylistItemView({
+            var x = new media.prototypes.PlaylistItemView({
                 model: fileModel
             });
             $('#playlist').append(x.el);
@@ -503,10 +503,10 @@ $(document).ready(function() {
                     this.model.fetch({
                         success: function(data) {
                             self.model.set({
-                                'files': new music.prototypes.Files(data.get('files'))
+                                'files': new media.prototypes.Files(data.get('files'))
                             });
 
-                            var x = new music.prototypes.ListView({
+                            var x = new media.prototypes.ListView({
                                 collection: self.model.get('files'),
                                 parent: self,
                                 el: $('#' + el),
@@ -529,7 +529,7 @@ $(document).ready(function() {
         }
     });
 
-    music.prototypes.ListView = Backbone.View.extend({
+    media.prototypes.ListView = Backbone.View.extend({
         template: _.template($(list_template).html()),
         initialize: function() {
             _.bindAll(this);
@@ -545,7 +545,7 @@ $(document).ready(function() {
             });
         },
         add: function(file) {
-            var x = new music.prototypes.FileView({
+            var x = new media.prototypes.FileView({
                 model: file,
                 parent: this,
             });
