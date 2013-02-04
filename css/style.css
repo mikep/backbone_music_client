@@ -250,13 +250,9 @@ ul#main_menu li a:hover {
     margin-left:15%;
     margin-top:15px;
 }
-audio {
+#player {
     width:100%;
     margin: 15px 0px;
-}
-
-audio[status="standby"] {
-    display:none;
 }
 
 #now_playing_container p {

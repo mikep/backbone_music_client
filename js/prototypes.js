@@ -235,10 +235,8 @@ $(document).ready(function() {
         initialize: function() {
             _.bindAll(this);
             this.render();
-            this.getActiveAudioElement().bind('ended', this.forward);
-            this.getActiveAudioElement().bind('play', this.playing);
-            this.getStandbyAudioElement().bind('ended', this.forward);
-            this.getStandbyAudioElement().bind('play', this.playing);
+            this.$el.find('#player').bind('ended', this.forward);
+            this.$el.find('#player').bind('play', this.playing);
         },
         render: function() {
             this.$el.html(this.template());
@@ -269,37 +267,25 @@ $(document).ready(function() {
         stop: function() {
             console.log('clicked stop');
         },
-        forward: function(e) {
-            if (e.type === "ended") {
-                console.log("song ended");
-            } else {
-                console.log('clicked forward');
-            }
+        forward: function() {
+            console.log('clicked forward');
             var index = media.collections.currentPlaylist.indexOf(this.model);
             var next = media.collections.currentPlaylist.at(index + 1);
-
-            if (next.get('path') === this.getStandbyAudioElement().attr('src')) {
-                this.getActiveAudioElement()[0].pause();
-                this.switchActiveAudioElement();
-                this.getActiveAudioElement()[0].play();
-                this.getStandbyAudioElement().attr('src', '')
-                this.model = this.nextModel;
-            } else {
-                this.setSongToPlay(next, this.getActiveAudioElement());
-                this.getActiveAudioElement()[0].play();
-            }
-
-            //media.collections.currentPlaylist.remove(this.model);
-            //$('#' + this.model.id).remove();
+            // FIXME Add settings.
+            //if (!media.settings.repeat) {
+                media.collections.currentPlaylist.remove(this.model);
+                $('#' + this.model.id).remove();
+            //}
+            this.setSongToPlay(next);
         },
         changeVolume: function(e) {
-            var volume = this.getActiveAudioElement()[0].volume;
+            var volume = this.$el.find('#player')[0].volume;
             if (volume === 0) {
                 if (!this.currentVolume) {
                     this.currentVolume = 1;
                 };
 
-                this.getActiveAudioElement()[0].volume = this.currentVolume;
+                this.$el.find('#player')[0].volume = this.currentVolume;
 
                 if (e.target.tagName === 'A') {
                     $(e.target).find('i').removeClass('icon-volume-off').addClass('icon-volume-up');
@@ -309,7 +295,7 @@ $(document).ready(function() {
             } else {
                 this.currentVolume = volume;
 
-                this.getActiveAudioElement()[0].volume = 0;
+                this.$el.find('#player')[0].volume = 0;
 
                 if (e.target.tagName === 'A') {
                     $(e.target).find('i').removeClass('icon-volume-up').addClass('icon-volume-off');
@@ -322,13 +308,8 @@ $(document).ready(function() {
         toggleRepeat: function() {
             console.log('clicked toggleRepeat');
         },
-        setSongToPlay: function(model, audioElement) {
-            var playerEl;
-            if (audioElement) {
-                playerEl = audioElement;
-            } else {
-                playerEl = this.getActiveAudioElement();
-            }
+        setSongToPlay: function(model) {
+            var playerEl = this.$el.find('#player');
 
             if (playerEl.attr('src') === "") {
                 // If we aren't playing something, load the player with either the passed file
@@ -336,20 +317,14 @@ $(document).ready(function() {
 
                 if (model) {
                     playerEl.attr('src', model.get('path'));
+                    this.model = model;
                 } else {
                     playerEl.attr('src', media.collections.currentPlaylist.at(0).get('path'));
-                    model = media.collections.currentPlaylist.at(0);
+                    this.model = media.collections.currentPlaylist.at(0);
                 }
             } else if (playerEl.attr('src') !== "" && model) {
                 playerEl.attr('src', model.get('path'));
-            }
-
-            if (playerEl.attr('id') === this.getActiveAudioElement().attr('id')) {
-                console.log("Setting active model");
                 this.model = model;
-            } else {
-                console.log("Setting standby model");
-                this.nextModel = model;
             }
         },
         setID3Data: function() {
@@ -370,43 +345,11 @@ $(document).ready(function() {
             this.setID3Data();
             var title = this.model.get('id3Data').get('artist') + ' - ' + this.model.get('id3Data').get('title');
             this.scrollTitle(title);
-            this.checkForBufferFinished();
         },
         logger: function(e) {
             console.log(this);
             console.log(e);
             console.trace();
-        },
-        getActiveAudioElement: function() {
-            return this.$el.find('audio[status="active"]');
-        },
-        getStandbyAudioElement: function() {
-            return this.$el.find('audio[status="standby"]');
-        },
-        switchActiveAudioElement: function(element) {
-            if (element) {
-                this.$el.find('audio').attr('status', 'standby');
-                this.$el.find(element).attr('status', 'active');
-            } else {
-                var activeId = "#" + this.$el.find('audio[status="active"]').attr('id');
-                var standbyId = "#" + this.$el.find('audio[status="standby"]').attr('id');
-
-                this.$el.find(activeId).attr('status', 'standby');
-                this.$el.find(standbyId).attr('status', 'active');
-            }
-        },
-        checkForBufferFinished: function () {
-            var activeAudioElement = this.getActiveAudioElement()[0];
-            var t = Math.round((activeAudioElement.currentTime / activeAudioElement.duration) * 100);
-            if (activeAudioElement.buffered.end(0) === activeAudioElement.duration) {
-                clearTimeout(this.bufferedCheckTimeout)
-                var index = media.collections.currentPlaylist.indexOf(this.model);
-                var next = media.collections.currentPlaylist.at(index + 1);
-                this.setSongToPlay(next, this.getStandbyAudioElement());
-            } else {
-                var p = Math.round((activeAudioElement.buffered.end(0) / activeAudioElement.duration) * 100);
-                this.bufferedCheckTimeout = setTimeout(this.checkForBufferFinished, 5000);
-            }
         }
     });
 

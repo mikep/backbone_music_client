@@ -106,8 +106,7 @@
             <a href="#" class="m-btn icn-only volume black" title="Toggle Mute/UnMute"><i class="icon-volume-up icon-white"></i></a>
             <a href="#" class="m-btn icn-only repeat black" title="Toggle Playlist Repeat"><i class="icon-repeat icon-white"></i></a>
         </div>
-        <audio id="player" controls src="" status="active"></audio>
-        <audio id="player2" controls src="" status="standby"></audio>
+        <audio id="player" controls src="" autoplay></audio>
         <div id="mobile_playlist_toggle"><i class="icon-white icon-list"></i>Show Playlist</div>
     </script>
 
@@ -118,13 +117,6 @@
             <p id="artist" bind="artist"></p>
             <p id="album" bind="album"></p>
         </div>
-    </script>
-
-    <script>
-        /*
-        var a = document.createElement('audio');
-        alert(!!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, '')));
-        */
     </script>
 </body>
 </html>
