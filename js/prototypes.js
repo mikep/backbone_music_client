@@ -26,7 +26,7 @@ $(document).ready(function() {
         url: 'api/pl/',
         comparator: function(model) {
             if (model.get('track_number')) {
-                return model.get('track_number');
+                return model.get('track_number')[0];
             } else {
                 return model.get('name');
             }
@@ -62,6 +62,10 @@ $(document).ready(function() {
             this.$el.html(this.template());
         },
         randomAlbum: function() {
+            // Scroll to the top first.
+            //
+            $('#file_browser').scrollTop(0);
+
             var list = $('#file_browser > div');
             var random = Math.floor(Math.random()*list.length);
 
@@ -552,4 +556,23 @@ $(document).ready(function() {
             this.$el.append(x.el);
         }
     });
+
+    media.showLoadingSpinner = function() {
+        img_pos_x = ($(document).width() / 2) - 30 + "px";
+        img_style = " left:" + img_pos_x + ";";
+
+        if ($('#lightbox').length === 0) {
+            $("<div id='lightbox'>").appendTo('body');
+            $('#lightbox').append("<img src='/img/spinner.gif' style='"+img_style+"' />");
+            $('#lightbox').width($(document).width()).height($(document).height());
+            $('#lightbox').fadeIn('fast');
+        }
+    };
+
+    media.hideLoadingSpinner = function () {
+        $('#lightbox').fadeOut('fast', function () {
+            $('#lightbox').remove();
+        });
+    };
+
 });

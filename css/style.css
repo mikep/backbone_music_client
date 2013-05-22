@@ -329,6 +329,25 @@ div#file_browser div.list a.list_row_item {
 #mobile_playlist_toggle {
     display:none;
 }
+
+#lightbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background-color: white;
+    opacity: 0.85;
+    height:100%;
+    display:none;
+}
+
+#lightbox img {
+    margin:auto;
+    width:220px;
+    position:fixed;
+    top:45%;
+}
+
 /* =============================================================================
    Media Queries
    ========================================================================== */
