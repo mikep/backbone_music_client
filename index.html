@@ -63,7 +63,11 @@
                 <i class="icon-random"></i> Random Album
             </a>
         </div>
-
+        <div class="m-btn-group">
+            <a href="#" id="logout" class="m-btn">
+                <i class="icon-lock"></i>Logout
+            </a>
+        </div>
         <!--<input type='text' id='search' />-->
     </script>
 
@@ -116,6 +120,14 @@
             <p id="title" bind="title"></p>
             <p id="artist" bind="artist"></p>
             <p id="album" bind="album"></p>
+        </div>
+    </script>
+
+    <script type="text/template" id="login_template">
+        <div id="login_form">
+            <input type="email" name="email" placeholder="Email" />
+            <input type="password" name="password" placeholder="Password" />
+            <a href="#" class='m-btn login black' title="Login"><i class="icon-lock"></i> Login</a>
         </div>
     </script>
 </body>

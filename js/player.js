@@ -21,6 +21,11 @@ $(document).ready(function() {
     };
 
     media.sync = function(method, model, options) {
+        if ('error' in options) {
+            media.originalBackboneError = options.error;
+        }
+
+        options.error = media.error;
         options.beforeSend = media.beforeSync;
         options.complete = media.ajaxComplete;
         return media.originalBackboneSync(method, model, options);
@@ -57,27 +62,7 @@ $(document).ready(function() {
     // show and hide the page loading spinner image.
     //
     media.showLoadingSpinner();
+    media.fetchInitialList();
 
-    $.getJSON('api/list_dir/', function(data) {
-        media.collections.files = new media.prototypes.Files();
-        media.collections.currentPlaylist = new media.prototypes.Files();
-
-        media.collections.currentPlaylist.on("add", function(file) {
-            if (media.collections.currentPlaylist.indexOf(file) === 0) {
-                media.views.playerControls.setSongToPlay(file);
-            }
-        });
-
-        media.views['listView'] = new media.prototypes.ListView({
-            el: $('div[role="main"]'),
-            collection: media.collections.files,
-            parent: this
-        });
-
-        media.collections.files.reset(data.files);
-
-        media.views.currentMainView = media.views.listView;
-        media.hideLoadingSpinner();
-    });
 
 });

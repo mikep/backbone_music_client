@@ -52,7 +52,8 @@ $(document).ready(function() {
         template:  _.template($(menu_bar_template).html()),
         events: {
             'click #randomAlbumView': 'randomAlbum',
-            'click .panels a': 'changePanel'
+            'click .panels a': 'changePanel',
+            'click #logout': 'logout'
         },
         initialize: function() {
             _.bindAll(this);
@@ -96,6 +97,19 @@ $(document).ready(function() {
 
             $('.panels a').removeClass('active');
             $(e.target).addClass('active');
+        },
+        logout: function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/api/logout',
+                type: 'POST',
+                dataType: 'json',
+                data: {},
+                success:function (data) {
+                    media.views.listView.collection.reset();
+                    media.showLogin();
+                }
+            });
         }
     });
 
@@ -357,7 +371,6 @@ $(document).ready(function() {
         }
     });
 
-
     media.prototypes.PlaylistItemView = Backbone.View.extend({
         template: _.template($(playlist_item_row_template).html()),
         events: {
@@ -557,12 +570,104 @@ $(document).ready(function() {
         }
     });
 
+    media.prototypes.LoginView = Backbone.View.extend({
+        template: _.template($(login_template).html()),
+        events: {
+            'click a.login': 'login'
+        },
+        initialize: function() {
+            _.bindAll(this);
+            this.render();
+        },
+        render: function () {
+            this.$el.html(this.template());
+        },
+        login: function (event) {
+            event.preventDefault();
+            var formValues = {
+                email: this.$el.find('input[name="email"]').val(),
+                password: this.$el.find('input[name="password"]').val()
+            };
+
+            $.ajax({
+                url: '/api/login',
+                type:'POST',
+                dataType:"json",
+                data: formValues,
+                success:function (data) {
+                    console.log(["Login request details: ", data]);
+                    media.loginView.$el.remove();
+                    $('#login_lightbox').remove();
+                    media.showLoadingSpinner();
+                    media.fetchInitialList();
+                },
+                error: function (a,b,c) {
+                    console.log(a,b,c);
+                }
+            });
+
+        }
+    });
+
+    media.showLogin = function () {
+        media.hideLoadingSpinner();
+
+        console.log("in showLogin");
+        img_pos_x = ($(document).width() / 2) - 103 + "px";
+        img_style = " left:" + img_pos_x + ";";
+
+        if ($('#login_lightbox').length === 0) {
+            $("<div id='login_lightbox' class='lightbox'>").appendTo('body');
+            $('#login_lightbox').append("<div id='login_container' style='"+img_style+"'>");
+            $('#login_lightbox').width($(document).width()).height($(document).height());
+            $('#login_lightbox').fadeIn('fast');
+        }
+
+        media.loginView = new media.prototypes.LoginView({
+            el: $('#login_container'),
+            parent: this
+        });
+    };
+
+    media.fetchInitialList = function () {
+        $.ajax({
+            dataType: "json",
+            url: "api/list_dir/",
+            success: function(data) {
+                media.collections.files = new media.prototypes.Files();
+                media.collections.currentPlaylist = new media.prototypes.Files();
+
+                media.collections.currentPlaylist.on("add", function(file) {
+                    if (media.collections.currentPlaylist.indexOf(file) === 0) {
+                        media.views.playerControls.setSongToPlay(file);
+                    }
+                });
+
+                media.views['listView'] = new media.prototypes.ListView({
+                    el: $('div[role="main"]'),
+                    collection: media.collections.files,
+                    parent: this
+                });
+
+                media.collections.files.reset(data.files);
+
+                media.views.currentMainView = media.views.listView;
+                media.hideLoadingSpinner();
+            },
+            error: function(xhr, status, status_code) {
+                if (xhr.status === 401) {
+                    media.showLogin();
+                }
+            }
+        });
+    };
+
     media.showLoadingSpinner = function() {
         img_pos_x = ($(document).width() / 2) - 30 + "px";
         img_style = " left:" + img_pos_x + ";";
 
         if ($('#lightbox').length === 0) {
-            $("<div id='lightbox'>").appendTo('body');
+            $("<div id='lightbox' class='lightbox'>").appendTo('body');
             $('#lightbox').append("<img src='/img/spinner.gif' style='"+img_style+"' />");
             $('#lightbox').width($(document).width()).height($(document).height());
             $('#lightbox').fadeIn('fast');
@@ -575,4 +680,19 @@ $(document).ready(function() {
         });
     };
 
+    media.error = function (xhr, error, error_status) {
+        if (xhr.status === 401) {
+            media.showLogin();
+            return false;
+        }
+
+        if (response.status === 403) {
+            console.log('not authorized');
+            return false;
+        }
+
+        if (media.originalBackboneError) {
+            media.originalBackboneError(model, response);
+        };
+    };
 });
