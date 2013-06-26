@@ -54,14 +54,20 @@ $(document).ready(function() {
             'click #randomAlbumView': 'randomAlbum',
             'click .panels a': 'changePanel'
         },
+        shortcuts: {
+            'r': 'randomAlbum',
+            'shift+r': 'randomAlbumAdd'
+        },
         initialize: function() {
             _.bindAll(this);
+            _.extend(this, new Backbone.Shortcuts);
+            this.delegateShortcuts();
             this.render();
         },
         render: function() {
             this.$el.html(this.template());
         },
-        randomAlbum: function() {
+        randomAlbum: function(args) {
             // Scroll to the top first.
             //
             $('#file_browser').scrollTop(0);
@@ -76,7 +82,22 @@ $(document).ready(function() {
                 speed = 500;
             }
 
-            $('#file_browser').animate({scrollTop: pos}, speed);
+            $('#file_browser').animate(
+                {scrollTop: pos},
+                {
+                    'duration': speed,
+                    'complete': function() { 
+                        if (args && args['add'] === true) {
+                            $(list[random]).find('i.addAlbumToPlaylist').click();
+                        }
+                    }
+                }
+            );
+
+            return $(list[random]);
+        },
+        randomAlbumAdd: function() {
+            this.randomAlbum({'add': true});
         },
         changePanel: function(e) {
             this.views = {
@@ -236,8 +257,19 @@ $(document).ready(function() {
             'click a.repeat': 'toggleRepeat',
             'click #mobile_playlist_toggle': 'toggleMobileView',
         },
+        shortcuts: {
+            'p': 'play',
+            'space': 'play',
+            'b': 'backward',
+            'f': 'forward',
+            'n': 'forward',
+            'm': 'changeVolume',
+            's': 'stop'
+        },
         initialize: function() {
             _.bindAll(this);
+            _.extend(this, new Backbone.Shortcuts);
+            this.delegateShortcuts();
             this.render();
             this.$el.find('#player').bind('ended', this.forward);
             this.$el.find('#player').bind('play', this.playing);
@@ -261,7 +293,17 @@ $(document).ready(function() {
                 });
             }
         },
-        play: function() {
+        play: function(e) {
+            var audio = $('audio')[0];
+            var pause_button = $('#player_controls a.play i');
+
+            if (audio.paused) {
+                audio.play();
+                pause_button.removeClass('icon-play').addClass('icon-pause');
+            } else {
+                audio.pause();
+                pause_button.removeClass('icon-pause').addClass('icon-play');
+            }
             console.log('clicked play');
         },
         backward: function() {
@@ -269,7 +311,11 @@ $(document).ready(function() {
             $('#player')[0].currentTime = $('#player')[0].currentTime - 10;
         },
         stop: function() {
-            console.log('clicked stop');
+            var audio = $('#player')[0];
+            audio.pause();
+            audio.currentTime = 0;
+            var pause_button = $('#player_controls a.play i');
+            pause_button.removeClass('icon-pause').addClass('icon-play');
         },
         forward: function() {
             console.log('clicked forward');
@@ -283,7 +329,9 @@ $(document).ready(function() {
             this.setSongToPlay(next);
         },
         changeVolume: function(e) {
+            var mute_button = $('#player_controls a.volume i');
             var volume = this.$el.find('#player')[0].volume;
+
             if (volume === 0) {
                 if (!this.currentVolume) {
                     this.currentVolume = 1;
@@ -291,20 +339,28 @@ $(document).ready(function() {
 
                 this.$el.find('#player')[0].volume = this.currentVolume;
 
-                if (e.target.tagName === 'A') {
-                    $(e.target).find('i').removeClass('icon-volume-off').addClass('icon-volume-up');
+                if (e.type === "click") {
+                    if (e.target.tagName === 'A') {
+                        $(e.target).find('i').removeClass('icon-volume-off').addClass('icon-volume-up');
+                    } else {
+                        $(e.target).removeClass('icon-volume-off').addClass('icon-volume-up');
+                    }
                 } else {
-                    $(e.target).removeClass('icon-volume-off').addClass('icon-volume-up');
+                    mute_button.removeClass('icon-volume-off').addClass('icon-volume-up');
                 }
             } else {
                 this.currentVolume = volume;
 
                 this.$el.find('#player')[0].volume = 0;
 
-                if (e.target.tagName === 'A') {
-                    $(e.target).find('i').removeClass('icon-volume-up').addClass('icon-volume-off');
+                if (e.type === "click") {
+                    if (e.target.tagName === 'A') {
+                        $(e.target).find('i').removeClass('icon-volume-up').addClass('icon-volume-off');
+                    } else {
+                        $(e.target).removeClass('icon-volume-up').addClass('icon-volume-off');
+                    }
                 } else {
-                    $(e.target).removeClass('icon-volume-up').addClass('icon-volume-off');
+                    mute_button.removeClass('icon-volume-up').addClass('icon-volume-off');
                 }
             }
             console.log('clicked changeVolume');
@@ -346,6 +402,8 @@ $(document).ready(function() {
             this.titleScrollTimeout = setTimeout(this.scrollTitle, 500);
         },
         playing: function(e) {
+            var pause_button = $('#player_controls a.play i');
+            pause_button.removeClass('icon-play').addClass('icon-pause');
             this.setID3Data();
             var title = this.model.get('id3Data').get('artist') + ' - ' + this.model.get('id3Data').get('title');
             this.scrollTitle(title);
@@ -557,6 +615,34 @@ $(document).ready(function() {
         }
     });
 
+    media.prototypes.HelpView = Backbone.View.extend({
+        template: _.template($(help_template).html()),
+        shortcuts: {
+            'shift+/': 'show',
+            'esc': 'hide'
+        },
+        initialize: function() {
+            console.log("init help");
+            _.bindAll(this);
+            _.extend(this, new Backbone.Shortcuts);
+            this.delegateShortcuts();
+            this.render();
+        },
+        render: function() {
+            console.log("render help");
+            this.$el.html(this.template());
+            this.hide();
+        },
+        show: function() {
+            console.log('show help');
+            this.$el.find('#help_lightbox').width($(document).width()).height($(document).height());
+            this.$el.find('#help_lightbox').fadeIn('fast');
+        },
+        hide: function() {
+            console.log('hide help');
+            this.$el.find('#help_lightbox').fadeOut('fast');
+        }
+    });
     media.showLoadingSpinner = function() {
         img_pos_x = ($(document).width() / 2) - 30 + "px";
         img_style = " left:" + img_pos_x + ";";

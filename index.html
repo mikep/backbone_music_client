@@ -37,6 +37,7 @@
             <div id="settings_browser" class="main_window" style="display:none;"></div>
             <div id="file_info"></div>
         </div>
+        <div class="help"></div>
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -45,6 +46,9 @@
     </script>
     <script src="js/libs/deep-model.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.modelbinder/0.1.5/Backbone.ModelBinder.min.js"></script>
+
+    <script src="js/libs/keymaster.js"></script>
+    <script src="js/libs/backbone.shortcuts.js"></script>
 
     <script src="js/prototypes.js"></script>
     <script src="js/player.js"></script>
@@ -116,6 +120,25 @@
             <p id="title" bind="title"></p>
             <p id="artist" bind="artist"></p>
             <p id="album" bind="album"></p>
+        </div>
+    </script>
+
+    <script type="text/template" id="help_template">
+        <div id="help_lightbox" class="lightbox">
+            <h3>Keyboard Shortcuts (default)</h3>
+            <dl>
+                <dt>r</dt><dd>Select a random album</dd>
+                <dt>R</dt><dd>Select a random album + start playing</dd>
+                <dt>p</dt><dd>Play/Pause</dd>
+                <dt>space</dt><dd>Play/Pause</dd>
+                <dt>b</dt><dd>Back 10 seconds</dd>
+                <dt>f</dt><dd>Next song in playlist</dd>
+                <dt>n</dt><dd>Next song in playlist</dd>
+                <dt>m</dt><dd>Mute</dd>
+                <dt>s</dt><dd>Stop</dd>
+                <dt>?</dt><dd>Show this help</dd>
+                <dt>esc</dt><dd>Hide this help</dd>
+            </dl>
         </div>
     </script>
 </body>

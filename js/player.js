@@ -44,6 +44,10 @@ $(document).ready(function() {
         parent: this
     });
 
+    media.views.helpView = new media.prototypes.HelpView({
+        el: $('#container .help'),
+    });
+
     media.collections.playlists = new media.prototypes.Playlists();
     media.views.playlistBrowserView = new media.prototypes.PlaylistBrowserView({
         el: $('#playlist_browser'),

@@ -330,6 +330,7 @@ div#file_browser div.list a.list_row_item {
     display:none;
 }
 
+.lightbox,
 #lightbox {
     position: absolute;
     top: 0;
@@ -341,11 +342,21 @@ div#file_browser div.list a.list_row_item {
     display:none;
 }
 
+.lightbox img,
 #lightbox img {
     margin:auto;
     width:220px;
     position:fixed;
     top:45%;
+}
+
+#help_lightbox {
+    padding:75px;
+    display:none;
+}
+
+#help_lightbox dd {
+    margin-bottom:20px;
 }
 
 /* =============================================================================
