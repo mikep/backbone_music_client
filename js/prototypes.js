@@ -102,11 +102,15 @@ $(document).ready(function() {
         changePanel: function(e) {
             this.views = {
                 'libraryView': media.views.listView,
-                'playlistView': media.views.playlistBrowserView
+                'playlistView': media.views.playlistBrowserView,
+                'preferencesView': media.views.preferencesView
             };
 
-            media.views.currentMainView.$el.fadeOut('fast');
             if (this.views.hasOwnProperty(e.target.id)) {
+                if (media.views.currentMainView === this.views[e.target.id]) {
+                    return false;
+                }
+                media.views.currentMainView.$el.fadeOut('fast');
                 this.views[e.target.id].$el.fadeIn('fast');
                 media.views.currentMainView = this.views[e.target.id];
 
@@ -117,6 +121,47 @@ $(document).ready(function() {
 
             $('.panels a').removeClass('active');
             $(e.target).addClass('active');
+        }
+    });
+
+    media.prototypes.PreferencesView = Backbone.View.extend({
+        template: _.template($(preferences_template).html()),
+        notificationState: function() {
+            if (window.webkitNotifications) {
+                return true ? window.webkitNotifications.checkPermission() === 0 : false;
+            }
+
+            // Find a better way to do this.
+            return "notSupported";
+        },
+        events: {
+            'click #toggle_notifications': 'toggleNotifications'
+        },
+        initialize: function() {
+            this.render();
+        },
+        render: function() {
+            if (this.notificationState() === "notSupported") {
+                return false;
+            }
+
+            this.$el.html(this.template());
+
+            if (this.notificationState()) {
+                this.$el.find("#toggle_notifications").find('[bind=enabled]').removeClass('hidden');
+                this.$el.find("#toggle_notifications").find('[bind=disabled]').addClass('hidden');
+            } else {
+                this.$el.find("#toggle_notifications").find('[bind=disabled]').removeClass('hidden');
+                this.$el.find("#toggle_notifications").find('[bind=enabled]').addClass('hidden');
+            }
+
+        },
+        toggleNotifications: function() {
+            var self = this;
+            window.webkitNotifications.requestPermission();
+        },
+        activate: function() {
+            this.render();
         }
     });
 
@@ -327,6 +372,32 @@ $(document).ready(function() {
                 $('#' + this.model.id).remove();
             //}
             this.setSongToPlay(next);
+
+            if (this.model.get('id3Data')) {
+                var id3Data = this.model.get('id3Data');
+                var image = window.location.origin;
+                var title = "";
+                var artist = "";
+
+                if (id3Data.get('image') === "/album.jpg") {
+                    image += "/img/album.jpg";
+                } else {
+                    image += id3Data.get('image');
+                }
+
+                if (id3Data.get('title')) {
+                    title = id3Data.get('title')[0];
+                } else {
+                    title = this.model.get('name');
+                }
+
+                if (id3Data.get('artist')) {
+                    artist = id3Data.get('artist')[0];
+                }
+
+                media.showNotification(image, title, artist);
+
+            }
         },
         changeVolume: function(e) {
             var mute_button = $('#player_controls a.volume i');
@@ -661,4 +732,16 @@ $(document).ready(function() {
         });
     };
 
+    media.showNotification = function (image, topLine, bottomLine) {
+        var notificationTimeout = 5000;
+        var notification = window.webkitNotifications.createNotification(
+            image, topLine, bottomLine
+        );
+
+        notification.show();
+
+        setTimeout(function() {
+            notification.cancel();
+        }, notificationTimeout);
+    };
 });

@@ -141,5 +141,17 @@
             </dl>
         </div>
     </script>
+
+    <script type="text/template" id="preferences_template">
+        <a class="m-btn list_row_item" id="toggle_notifications">
+            <i class="icon-star" bind="enabled" class="hidden"></i>
+            <i class="icon-star-empty" bind="disabled" class="hidden"></i>
+            <span>Toggle Desktop notifications</span>
+            <span>Currently: </span>
+            <span bind="disabled" class="hidden">Disabled</span>
+            <span bind="enabled" class="hidden">Enabled</span>
+        </a>
+    </script>
+
 </body>
 </html>

@@ -55,6 +55,11 @@ $(document).ready(function() {
         parent: this
     });
 
+    media.views.preferencesView = new media.prototypes.PreferencesView({
+        el: $('#settings_browser'),
+        parent: this
+    });
+
     // Load Initial List
     //
     // Since we are just using jquery to do this we need to manually
