@@ -291,13 +291,30 @@ p#title {
 }
 
 div#file_browser a.list_row_item {
-  margin-top:3px;
+/*        padding:10px 0px;
+        display:inline-block;
+        width: 200px !important;
+        height: 150px;
+        margin: 10px;
 }
+
+#file_browser div {
+        display:inline-block;
+}
+
+div#file_browser a.list_row_item {
+*/
+  margin-top:3px;
+  /*background-color: #dedede;*/
+}
+
+/*div.list {display:none !important; margin:0 !important;}*/
 
 div#file_browser div.list a.list_row_item {
   margin-top:0px;
 }
 
+/*div#file_browser a.list_row_item span { white-space: normal; }*/
 
 #playlist {
     position:relative;
@@ -382,6 +399,13 @@ div#file_browser div.list a.list_row_item {
     }
     div#file_browser a.list_row_item {
         padding:10px 0px;
+/*        display:inline-block;
+        width:300px !important;
+        height: 250px;
+        margin: 10px;
+    }
+    #file_browser div {
+        display:inline-block;*/
     }
     #mobile_playlist_toggle {
         display:block;

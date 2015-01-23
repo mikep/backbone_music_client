@@ -43,7 +43,11 @@ $(document).ready(function() {
             if (model.get('track_number')) {
                 return model.get('track_number');
             } else {
-                return model.get('name');
+                if (model.get('type') === 'directory') {
+                    return -model.get('mtime');
+                } else {
+                    return model.get('name');
+                }
             }
         }
     });
@@ -339,6 +343,7 @@ $(document).ready(function() {
             }
         },
         play: function(e) {
+            e.preventDefault();
             var audio = $('audio')[0];
             var pause_button = $('#player_controls a.play i');
 
